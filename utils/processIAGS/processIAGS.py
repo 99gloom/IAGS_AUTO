@@ -110,6 +110,9 @@ class ProcessIAGS:
         target_species_name = self.evo_tree.painting_anc_node
         target_species_copy_number = self.nodes_copynumber[self.evo_tree.painting_anc_node]
 
+        with open(self.painting_dir+'/' + 'Painting_start_point.txt','w') as f:
+            f.write('Painting_start_point:' + target_species_name)
+
         # 处理颜色列表不够的情况
         HEX_LIST = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
         chr = []

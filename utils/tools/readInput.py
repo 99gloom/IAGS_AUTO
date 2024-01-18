@@ -69,8 +69,8 @@ def process_input(argv):
                 manual_option = 'manual'
             elif manual_option in ['continue', 'Continue','c','C']:
                 manual_option = 'continue'
-            elif manual_option in ['profile', 'Profile','p', 'P']:
-                manual_option = 'profile'
+            elif manual_option in ['dotplot', 'dotPlot', 'DotPlot','p', 'P']:
+                manual_option = 'dotplot'
             else:
                 printHelp()
                 sys.exit()

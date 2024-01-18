@@ -14,8 +14,8 @@ from utils.processDRIMM import processLCSAndFirstFilter as pLCS
 from utils.processDRIMM import processOrthoFind as pO
 from utils.processDRIMM import processFinalFilter as pFinal
 from utils.processIAGS import processIAGS as pIAGS
-from utils.makeProfile.makeProfile import check_copy_number_validity
-from utils.makeProfile.plot import process_plot
+from utils.makeDotplot.makeProfile import check_copy_number_validity
+from utils.makeDotplot.plot import process_plot
 
 
 def main(argv):
@@ -87,9 +87,9 @@ def main(argv):
             dustLength = str(processOrthoFind.defult_dustLength)
 
         # make a profile for user to evaluate
-        if manual_option == 'profile':
-            out_prfile = make_dir(os.path.join(Result_OutputDir, 'Profile'))
-            process_plot(processOrthoFind.sp, outputPath_process_orthofind, fileDir, out_prfile)
+        if manual_option == 'dotplot':
+            out_dotplot = make_dir(os.path.join(Result_OutputDir, 'Dotplot'))
+            process_plot(processOrthoFind.sp, outputPath_process_orthofind, fileDir, out_dotplot)
             exit()
 
 
