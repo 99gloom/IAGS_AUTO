@@ -1,12 +1,15 @@
 # IAGS_AUTO
 基于IAGS的自动化流程工具
 
+[English Version](../../README.md)
+
 ## 使用
 
 ### 文件
 
 IAGS_AUTO工具需要三种文件：各物种gff文件、orthogroup.tsv文件，以及species.tree文件，并将这三种文件放置于同一文件夹下。
 其中gff和orthogroup.tsv文件与之前的脚本[processDrimm](https://github.com/99gloom/processDrimm) 所需的相同。
+
 下面将逐一介绍：
 
 1. gff文件：格式与[MCScanX](https://github.com/wyp1125/MCScanx) 输入的相同。文件内只有四列，分别是染色体名称、基因名、基因起始坐标、基因结束坐标。格式如下：  
@@ -77,7 +80,7 @@ model_and_outgroup.txt为各祖先节点所用外族信息，如需手动指定�
   + model_and_outgroup.txt：各个祖先节点计算信息，格式为：当前计算的祖先节点:IAGS计算模型:孩子节点:外族。如果模型为GMP或MultiCopyGMP，则孩子节点有两个。尤其是MultiCopyGMP模型中，如果其外族的拷贝数不足，则会对外族染色体手动加倍以计算，以"*N"表示。
 + Process_Drimm  
   本质为[processDrimm](https://github.com/99gloom/processDrimm) 的自动化过程。
-  + Process_OrthoFind：通过物种gff和orthogroup.tsv文件对基因编码，生成基因序列；
+  + Process_OrthoFind：通过物种GFF和orthogroup.tsv文件对基因编码，生成基因序列；
   + Drimm_Synteny_Output：运行DRIMM后的原始结果；
   + Drimm_Blocks：对DRIMM运行后的原始结果进行LCS，以便下游分析；
   + Final_Blocks：将Drimm_Blocks按比例过滤，生成可供IAGS运行的block。

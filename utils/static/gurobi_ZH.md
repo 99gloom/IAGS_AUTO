@@ -110,7 +110,7 @@
 
    <div align="center">
    
-   上述步骤走完之后，输入命令gurobi.sh测试是否安装成功，出现如下画面即为成功
+   上述步骤走完之后，输入命令`gurobi.sh`测试是否安装成功，出现如下画面即为成功
    
    <img src="img_6.png" width="500" alt="img_6">   
    </div>
