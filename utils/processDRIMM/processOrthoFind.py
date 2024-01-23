@@ -14,7 +14,7 @@ class processOrthoFind:
         if (not Path(self.outputPath_tempDir).exists()):
             os.makedirs(self.outputPath_tempDir)
         self.__gffFileSort()
-        self.defult_dustLength = self.__get_dustLength(ratioPath)
+        self.default_dustLength = self.__get_dustLength(ratioPath)
         self.speciesAndChrLen, \
         self.sp, \
         self.rate_dir,\

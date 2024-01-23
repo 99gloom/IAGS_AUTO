@@ -19,8 +19,8 @@ class processDrimm:
 
         self.inputSequencePath = inputSequencePath
         self.output_temp = output_temp
-        self.cycleLength = cycleLength
-        self.dustLength = dustLength
+        self.cycleLength = str(cycleLength)
+        self.dustLength = str(dustLength)
         self.speciesAndChrLen = speciesAndChrLen
         self.sp = sp
         self.drimmBlockDir = drimmBlockDir

@@ -5,6 +5,7 @@
 import os
 import shutil
 import sys
+import argparse
 from utils.tools.makeDirFunc import make_dir
 from utils.tools.readInput import process_input
 from utils.processTREE import EvolutionaryTree as CT
@@ -17,17 +18,35 @@ from utils.processIAGS import processIAGS as pIAGS
 from utils.makeDotplot.makeProfile import check_copy_number_validity
 from utils.makeDotplot.plot import process_plot
 
+parsers = argparse.ArgumentParser(description='The project is based on IAGS and automates process')
 
-def main(argv):
-    # 获取命令基本信息
-    fileDir, \
+def main():
+    parsers.add_argument('-f','--filepath', help='filePath : Please enter the filePath.', required=True, type=str)
+    parsers.add_argument('-c', '--cycleLength', required=False, type=int, default=20,
+                         help=('cycleLength : Minimum cycle length in DRIMM-Synteny algorithm. The default value is 20.')
+                         )
+    parsers.add_argument('-d', '--dustLength', required=False, type=int, default=None,
+                         help=('dustLength : Maximum genetic diversity in DRIMM-Synteny algorithm. '
+                               'The default value is all species copy number plus one.'))
+    parsers.add_argument('-s', '--shape', required=False, type=str, default='s',choices=['s','c'],
+                         help=('chromosomes shape: \'s\' represents a string chromosome, '
+                               'and \'c\' represents a circular chromosome. '
+                               'The default value is \'s\'.'))
+    parsers.add_argument('-m', '--model', required=False, type=str, default=None,choices=['manual','continue','dotplot'],
+                         help=('model: \'manual\' is for manual modification of outgroup or block '
+                               'and \'continue\' for continue running the program after manually modifying the file. '
+                               'Default is to run automatically without interruption. '
+                               '\'dotplot\' is generate a two-by-two dotplot for each species'))
+
+
+    fileDir,\
     orthogroups_path, \
     tree_file_path, \
     gff_path_list, \
     cycleLength, \
     dustLength, \
     chr_shape, \
-    manual_option = process_input(argv)
+    manual_option = process_input(parsers)
 
     pre_manual = True
     after_manual = True
@@ -84,14 +103,13 @@ def main(argv):
 
         # if user doesn't input dustLength, using default number
         if not dustLength:
-            dustLength = str(processOrthoFind.defult_dustLength)
+            dustLength = processOrthoFind.default_dustLength
 
         # make a profile for user to evaluate
         if manual_option == 'dotplot':
             out_dotplot = make_dir(os.path.join(Result_OutputDir, 'Dotplot'))
             process_plot(processOrthoFind.sp, outputPath_process_orthofind, fileDir, out_dotplot)
             exit()
-
 
         # exit()
         # process DRIMM
@@ -133,4 +151,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
