@@ -1,3 +1,5 @@
+import os.path
+
 from treelib import Tree, Node
 
 
@@ -35,13 +37,13 @@ class Evolutionary_tree():
     def __save_root_info(self, dir):
         if dir[-1] != '/':
             dir = dir + '/'
-        with open(dir + 'root_file_for_graph_iter.txt', 'w') as gf:
+        with open(os.path.join(dir, 'root_file_for_graph_iter.txt'), 'w') as gf:
             gf.write(self.tree.root + ':' + ':'.join([i.identifier for i in self.tree.children('root')]))
 
     def __save_tree_info(self, dir):
         if dir[-1] != '/':
             dir = dir + '/'
-        with open(dir + 'Evolutionary_tree.txt', 'w'):
+        with open(os.path.join(dir, 'Evolutionary_tree.txt'), 'w'):
             pass
         self.tree.save2file(dir + 'Evolutionary_tree.txt')
         return
@@ -49,21 +51,21 @@ class Evolutionary_tree():
     def __save_species_ratio(self, dir):
         if dir[-1] != '/':
             dir = dir + '/'
-        with open(dir + 'species.ratio', 'w') as srf:
+        with open(os.path.join(dir, 'species.ratio'), 'w') as srf:
             for i in self.leaves_nodes_id:
                 srf.write(i + '\t' + str(self.tree.get_node(i).data) + '\n')
 
     def __save_all_ratio(self, dir):
         if dir[-1] != '/':
             dir = dir + '/'
-        with open(dir + 'all.ratio', 'w') as srf:
+        with open(os.path.join(dir, 'all.ratio'), 'w') as srf:
             for i in self.all_nodes_id_without_root:
                 srf.write(i + '\t' + str(self.tree.get_node(i).data) + '\n')
 
     def __save_computing_order(self, dir):
         if dir[-1] != '/':
             dir = dir + '/'
-        with open(dir + 'model_and_outgroup.txt', 'w') as cof:
+        with open(os.path.join(dir, 'model_and_outgroup.txt'), 'w') as cof:
             for i in self.computing_list:
                 cof.write(i + '\n')
 

@@ -28,20 +28,20 @@ class processDrimm:
         self.__execute()
 
     def __execute(self):
+        current_path = os.path.dirname(__file__)
+        drimm_path = os.path.join(current_path, 'Program.exe')
         AbsSequencePath = os.path.abspath(self.inputSequencePath)
         AbsSequencePath = AbsSequencePath.replace("\\", "/")
         AbsOutPath = os.path.abspath(self.output_temp)
         AbsOutPath = AbsOutPath.replace("\\", "/")
-        cmd = "mono ./utils/processDRIMM/Program.exe " + AbsSequencePath + " " + AbsOutPath + " " + self.cycleLength + " " + self.dustLength
-        # main = "mono ./win-x64/drimm.dll "+AbsSequencePath+" "+AbsOutPath+" "+self.cycleLength+" "+self.dustLength    linux
-        # print(cmd)
+        cmd = "mono " + drimm_path + ' ' \
+              + AbsSequencePath + " " + AbsOutPath + " " + self.cycleLength + " " + self.dustLength
         drimmPrint = os.system(cmd)
-        # print (drimmPrint)
         return self.__splitBySpecies()
 
     def __splitBySpecies(self):
         # 将DRIMM处理得到的block通过染色体数目划分为各个文件，并添上c或者s头
-        readfile = open(self.output_temp + "/blocks.txt", 'r')
+        readfile = open(os.path.join(self.output_temp, "blocks.txt"), 'r')
         blocks = readfile.read().split('\n')
         readfile.close()
         speciesBlock = {}
@@ -51,8 +51,8 @@ class processDrimm:
             speciesBlock[speciesKey] = blocks[index:index + self.speciesAndChrLen[speciesKey]]
             index += self.speciesAndChrLen[speciesKey]
         for speciesBlockItem in speciesBlock:
-            output = open(self.drimmBlockDir + "/" + speciesBlockItem + ".block", 'w')
-            output_block_files[speciesBlockItem] = self.drimmBlockDir + "/" + speciesBlockItem + ".block"
+            output = open(os.path.join(self.drimmBlockDir, speciesBlockItem) + ".block", 'w')
+            output_block_files[speciesBlockItem] = os.path.join(self.drimmBlockDir,  speciesBlockItem + ".block")
 
             for s in speciesBlock[speciesBlockItem]:
                 if self.chr_shape == 's' or self.chr_shape == 'S':

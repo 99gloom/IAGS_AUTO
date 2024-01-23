@@ -110,7 +110,7 @@ class ProcessIAGS:
         target_species_name = self.evo_tree.painting_anc_node
         target_species_copy_number = self.nodes_copynumber[self.evo_tree.painting_anc_node]
 
-        with open(self.painting_dir+'/' + 'Painting_start_point.txt','w') as f:
+        with open(os.path.join(self.painting_dir, 'Painting_start_point.txt'),'w') as f:
             f.write('Painting_start_point:' + target_species_name)
 
         # 处理颜色列表不够的情况

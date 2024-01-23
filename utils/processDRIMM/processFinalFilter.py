@@ -1,3 +1,4 @@
+import os.path
 from copy import deepcopy
 
 
@@ -25,7 +26,7 @@ class processFinalFilter:
 
         # 获取synteny所有匹配成功的block以及次数
         synteny_block_position = {}
-        with open(syntenyDir + '/' + sp + '.synteny', 'r') as sf:
+        with open(os.path.join(syntenyDir, sp + '.synteny'), 'r') as sf:
             for i in sf:
                 block_info = i
                 block_info = block_info.split(' ')[0].split(':')
@@ -35,7 +36,7 @@ class processFinalFilter:
 
         # 获取所有block序列
         block_sequence = []
-        with open(blockDir + '/' + sp + '.block', 'r') as inf:
+        with open(os.path.join(blockDir, sp + '.block'), 'r') as inf:
             for i in inf:
                 block_info = i
                 block_info = block_info.rstrip('\n').rstrip()
@@ -52,7 +53,7 @@ class processFinalFilter:
                     raw_block_position[j] = 0
         block_list = deepcopy(raw_block_position)
 
-        with open(resultDir + '/' + sp + '.unevaluated.block', 'w') as outf:
+        with open(os.path.join(resultDir, sp + '.unevaluated.block'), 'w') as outf:
             for i in block_sequence:
                 if self.chr_shape == 's' or self.chr_shape == 'S':
                     outf.write('s ')
@@ -73,8 +74,8 @@ class processFinalFilter:
 
     def __outputFilterSynteny(self, block_list, syntenyDir, resultDir, sp):
         block_list_copy = deepcopy(block_list)
-        with open(resultDir + '/' + sp + '.final.synteny', 'w') as synWriteFile:
-            with open(syntenyDir + '/' + sp + '.synteny', 'r') as synReadFile:
+        with open(os.path.join(resultDir, sp + '.final.synteny'), 'w') as synWriteFile:
+            with open(os.path.join(syntenyDir, sp + '.synteny'), 'r') as synReadFile:
                 for i in synReadFile:
                     temp = i.rstrip('\n').rstrip()
                     temp = temp.split(' ')
@@ -85,8 +86,8 @@ class processFinalFilter:
                                            temp[0].split(':')[3] + ' ')
                         synWriteFile.write(' '.join(temp[1:]) + ' \n')
 
-        with open(resultDir + '/' + sp + '.final.synteny.genename', 'w') as synWriteFile:
-            with open(syntenyDir + '/' + sp + '.synteny.genename', 'r') as synReadFile:
+        with open(os.path.join(resultDir, sp + '.final.synteny.genename'), 'w') as synWriteFile:
+            with open(os.path.join(syntenyDir, sp + '.synteny.genename'), 'r') as synReadFile:
                 for i in synReadFile:
                     temp = i.rstrip('\n').rstrip()
                     temp = temp.split(' ')
@@ -103,7 +104,7 @@ class processFinalFilter:
     def processGenenumber(self, sp, resultDir):
         block_len = {}
         for i in sp:
-            with open(resultDir + '/' + i + '.final.synteny', 'r') as sf:
+            with open(os.path.join(resultDir, i + '.final.synteny'), 'r') as sf:
                 for line in sf:
                     temp = line
                     temp = temp.rstrip('\n').rstrip()
@@ -122,7 +123,7 @@ class processFinalFilter:
                             # print(block_len[block])
                             # print('-----------------')
 
-        with open(resultDir + '/blockindex.genenumber', 'w') as f:
+        with open(os.path.join(resultDir, 'blockindex.genenumber'), 'w') as f:
             f.write('blockID\tblockLength\n')
             for i, j in block_len.items():
                 f.write(i + '\t' + str(j) + '\n')
