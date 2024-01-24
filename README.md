@@ -4,6 +4,34 @@ The project is based on IAGS and automates process
 
 [中文版本](utils/static/README_ZH.md)
 
+## Download
+
+You can use this tool via conda, or by downloading the source code.
+
+### conda (Recommend)
+
++ Creating a Virtual Environment
+   ```shell
+   conda create -n iags_auto python=3.7
+   ```
++ Download
+   ```shell
+   conda install -c gurobi -c conda-forge -c huntguo iags_auto
+   ```
+
+### Source code 
+
++ Download the source code
+   ```shell
+   wget https://codeload.github.com/99gloom/IAGS_AUTO/zip/refs/heads/main
+   ```
++ Download mono to run DRIMM
+   ```shell
+   sudo apt install mono-devel
+   ```
+
+*Note: After downloading both methods, you need to activate [gurobi](https://www.gurobi.com), here we provide a [help document](utils/static/gurobi.md) to help you get the license.*
+
 ## Usage
 
 ### Files
@@ -19,7 +47,7 @@ The following will be introduced one by one:
    ```
 2. Orthogroups.tsv: The output file of [OrthoFinder](https://github.com/davidemms/OrthoFinder).
 3. species.tree: WGD-Newick format. Essentially a modified version of the Newick format, with the addition of "[WGD]" markers at the WGD (Whole Genome Duplication) positions in the tree. In the figure below, the red dots represent WGD markers.
-   ![图中红色点位为WGD标志](utils/static/img.png)
+   ![Red dots are WGD signal](utils/static/img.png)
 
 ### Application
 
@@ -117,6 +145,9 @@ The role of each file is described in more detail below:
   ```
 
   Using this command generates an additional "Dotplot" folder in "Result" where the results will be stored.
+
+If you choose to download the source code for use, you will need to replace `iags_auto` with `python IAGS_ATUO.py` in the above command to start it by calling the python file directly.
+
 
 ## Support
 
