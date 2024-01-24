@@ -125,7 +125,7 @@ def main():
         # process LCS and fist filter
         processLCS = pLCS.processLCSAndFirstFilter(outputPath_drimmBlocks, outputPath_temp_blocks,
                                                    os.path.join(out_tree_Dir, 'species.ratio'), outputPath_process_orthofind,
-                                                   os.path.join(outputPath_DRIMM_Synteny_Files, "Synteny.txt"),
+                                                   os.path.join(outputPath_DRIMM_Synteny_Files, "synteny.txt"),
                                                    processOrthoFind.sp, chr_shape)
 
         # process final filter and get block length

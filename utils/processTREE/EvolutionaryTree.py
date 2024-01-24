@@ -18,8 +18,10 @@ class Evolutionary_tree():
     def __calculate_tree(self, tree_path):
         tree_format = self.__get_tree_file_info(tree_path)
         tree = self.__create_tree(tree_format)
-        tree.show()
-        tree.show(data_property='real')
+        byte_string_tree_sp_name = tree.show(stdout=False)
+        byte_string_tree_copy_number = tree.show(data_property='real',stdout=False)
+        print(byte_string_tree_sp_name)
+        print(byte_string_tree_copy_number)
         # 得到节点信息并输出所有的构建信息
         leaves_nodes_id, non_leaves_node_id, computing_nodes_id, painting_node_id = self.__get_nodes_info(tree)
         computing_list = self.__calculate_ancestor_nodes(tree, leaves_nodes_id, non_leaves_node_id,
