@@ -2,10 +2,12 @@ import copy
 import os
 import random
 
-from ..IAGS_tool.models import MultiGMPmodel, GGHPmodel, MultiGGHPmodel, GMPmodel
-from ..IAGS_tool.util import calculatedCRBrateAndEstimationAccuracy, chromosomeRearrangementPainting, calculateFissionsAndFusions
+from utils.tools.IAGS_tool.models import MultiGGHPmodel
+from utils.tools.IAGS_tool.models import GGHPmodel, GMPmodel, MultiGMPmodel
+from utils.tools.IAGS_tool.util import chromosomeRearrangementPainting, calculateFissionsAndFusions
+from utils.tools.IAGS_tool.util import calculatedCRBrateAndEstimationAccuracy
 from utils.tools.makeDirFunc import make_dir
-from ..processTREE.EvolutionaryTree import Evolutionary_tree
+from utils.pipline.processTREE.EvolutionaryTree import Evolutionary_tree
 
 
 class ProcessIAGS:
@@ -133,10 +135,10 @@ class ProcessIAGS:
             rearranged_species_name = i
             rearranged_species_copy_number = self.nodes_copynumber[i]
             chromosomeRearrangementPainting.plotChrsRearrangement(block_length_file,
-                                  rearranged_species_block_file, rearranged_species_name,
-                                  rearranged_species_copy_number,target_species_block_file,
-                                  target_species_name, target_species_copy_number,
-                                  color_list, self.painting_dir + '/')
+                                                                  rearranged_species_block_file, rearranged_species_name,
+                                                                  rearranged_species_copy_number, target_species_block_file,
+                                                                  target_species_name, target_species_copy_number,
+                                                                  color_list, self.painting_dir + '/')
 
     def process_Calculating_Fissions_and_Fusions(self):
         Fissions_and_Fusions_path = os.path.join(self.output_dir, 'shufflingEvents.txt')
@@ -163,8 +165,8 @@ class ProcessIAGS:
                     descendant_file = self.__get_node_path(j)
                     descendant_copy_number = self.nodes_copynumber[j]
                     fissions, fusions = calculateFissionsAndFusions.calculateFissionAndFussions(descendant_file, ancestor_file,
-                                                                    descendant_copy_number, ancestor_copy_number,
-                                                                    ancestor_block_sequence_dir)
+                                                                                                descendant_copy_number, ancestor_copy_number,
+                                                                                                ancestor_block_sequence_dir)
                     outfile.write(self.evo_tree.painting_anc_node + '->' +  j + '\n' +
                                   'fissions: ' + str(fissions) + '\t' + 'fusions: ' + str(fusions) + '\n')
             else:
@@ -183,8 +185,8 @@ class ProcessIAGS:
                     descendant_file = self.__get_node_path(j)
                     descendant_copy_number = self.nodes_copynumber[j]
                     fissions, fusions = calculateFissionsAndFusions.calculateFissionAndFussions(descendant_file, ancestor_file,
-                                                                    descendant_copy_number, ancestor_copy_number,
-                                                                    ancestor_block_sequence_dir)
+                                                                                                descendant_copy_number, ancestor_copy_number,
+                                                                                                ancestor_block_sequence_dir)
                     outfile.write(ancestor_name + '->' +  j + '\n' +
                                   'fissions: ' + str(fissions) + '\t' + 'fusions: ' + str(fusions) + '\n')
 

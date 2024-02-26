@@ -4,19 +4,16 @@
 
 import os
 import shutil
-import sys
 import argparse
 from utils.tools.makeDirFunc import make_dir
 from utils.tools.readInput import process_input
-from utils.processTREE import EvolutionaryTree as CT
-from utils.processDRIMM import processDrimmAndData as pD
-from utils.processDRIMM import processEmptyChrAndBlockLength as pEmpty
-from utils.processDRIMM import processLCSAndFirstFilter as pLCS
-from utils.processDRIMM import processOrthoFind as pO
-from utils.processDRIMM import processFinalFilter as pFinal
-from utils.processIAGS import processIAGS as pIAGS
-from utils.makeDotplot.makeProfile import check_copy_number_validity
-from utils.makeDotplot.plot import process_plot
+from utils.pipline.processTREE import EvolutionaryTree as CT
+from utils.pipline.processFilterAccurate import processEmptyChrAndBlockLength as pEmpty
+from utils.pipline.processFilterAccurate import processLCSAndFirstFilter as pLCS, processFinalFilter as pFinal
+from utils.pipline.processDRIMM import processOrthoFind as pO, processDrimmAndData as pD
+from utils.pipline.processIAGS import processIAGS as pIAGS
+from utils.tools.makeDotplot.makeProfile import check_copy_number_validity
+from utils.tools.makeDotplot.plot import process_plot
 
 parsers = argparse.ArgumentParser(description='The project is based on IAGS and automates process')
 
