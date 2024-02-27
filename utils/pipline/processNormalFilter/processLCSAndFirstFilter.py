@@ -2,7 +2,7 @@ import os
 # from LCS import LCS   # 调试用
 from pathlib import Path
 
-from utils.pipline.processFilterAccurate.LCS import LCS
+from utils.tools.LCS import LCS
 
 
 class processLCSAndFirstFilter:

@@ -8,8 +8,8 @@ import argparse
 from utils.tools.makeDirFunc import make_dir
 from utils.tools.readInput import process_input
 from utils.pipline.processTREE import EvolutionaryTree as CT
-from utils.pipline.processFilterAccurate import processEmptyChrAndBlockLength as pEmpty
-from utils.pipline.processFilterAccurate import processLCSAndFirstFilter as pLCS, processFinalFilter as pFinal
+from utils.pipline.processNormalFilter import processEmptyChrAndBlockLength as pEmpty
+from utils.pipline.processNormalFilter import processLCSAndFirstFilter as pLCS, processFinalFilter as pFinal
 from utils.pipline.processDRIMM import processOrthoFind as pO, processDrimmAndData as pD
 from utils.pipline.processIAGS import processIAGS as pIAGS
 from utils.tools.makeDotplot.makeProfile import check_copy_number_validity
@@ -35,7 +35,6 @@ def main():
                                'Default is to run automatically without interruption. '
                                '\'dotplot\' is generate a two-by-two dotplot for each species'))
 
-
     fileDir,\
     orthogroups_path, \
     tree_file_path, \
@@ -53,7 +52,6 @@ def main():
         pre_manual = False
 
     # 生成所有需要的文件目录
-
     '''
     1. 总目录Result，包含三个文件：
     Tree_File   Process_Drimm   IAGS
@@ -63,20 +61,23 @@ def main():
     
     3. 生成block文件的目录processDrimm，包含四个文件夹：
     Process_OrthoFind   Drimm_Synteny_Output    Drimm_Blocks    Unfiltered_Empty_Chr_Blocks    Final_Blocks
-    
     '''
-    Result_OutputDir = make_dir(os.path.join(fileDir + 'Result'))
 
-    out_tree_Dir = make_dir(os.path.join(Result_OutputDir + 'Tree_File'))
-    out_process_Drimm = make_dir(os.path.join(Result_OutputDir + 'Process_Drimm'))
-    out_IAGS = make_dir(os.path.join(Result_OutputDir + 'IAGS'))
+    Result_OutputDir = make_dir(os.path.join(fileDir, 'Result'))
 
-    outputPath_process_orthofind = make_dir(os.path.join(out_process_Drimm + 'Process_OrthoFind'))
-    outputPath_DRIMM_Synteny_Files = make_dir(os.path.join(out_process_Drimm + "Drimm_Synteny_Output"))
-    outputPath_drimmBlocks = make_dir(os.path.join(out_process_Drimm + 'Drimm_Blocks'))
-    outputPath_unfiltered_empty_chr_Blocks = make_dir(os.path.join(out_process_Drimm + 'Unfiltered_Empty_Chr_Blocks'))
-    outputPath_finalBlocks = make_dir(os.path.join(out_process_Drimm + 'Final_Blocks'))
-    outputPath_temp_blocks = make_dir(os.path.join(out_process_Drimm + 'Filter_temp_file'))
+    out_tree_Dir = make_dir(os.path.join(Result_OutputDir, 'Tree_File'))
+    out_process_Drimm = make_dir(os.path.join(Result_OutputDir, 'Process_Drimm'))
+    out_IAGS = make_dir(os.path.join(Result_OutputDir, 'IAGS'))
+
+    outputPath_process_orthofind = make_dir(os.path.join(out_process_Drimm, 'Process_OrthoFind'))
+    outputPath_DRIMM_Synteny_Files = make_dir(os.path.join(out_process_Drimm, "Drimm_Synteny_Output"))
+
+    # 普通过滤路径
+    out_filter = make_dir(os.path.join(out_process_Drimm, "Filter"))
+    outputPath_drimmBlocks = make_dir(os.path.join(out_filter, 'Drimm_Blocks'))
+    outputPath_unfiltered_empty_chr_Blocks = make_dir(os.path.join(out_filter, 'Unfiltered_Empty_Chr_Blocks'))
+    outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_Blocks'))
+    outputPath_temp_blocks = make_dir(os.path.join(out_filter, 'Filter_temp_file'))
 
 
     # manual_option 手动添加block或者更换外族判断
@@ -108,7 +109,6 @@ def main():
             process_plot(processOrthoFind.sp, outputPath_process_orthofind, fileDir, out_dotplot)
             exit()
 
-        # exit()
         # process DRIMM
         processDRIMM = pD.processDrimm(outputPath_process_orthofind + "sample.sequence",
                                        outputPath_DRIMM_Synteny_Files,
@@ -119,6 +119,9 @@ def main():
                                        outputPath_drimmBlocks,
                                        chr_shape)
 
+        '''
+        DRIMM后处理——更改位置
+        '''
         # process LCS and fist filter
         processLCS = pLCS.processLCSAndFirstFilter(outputPath_drimmBlocks, outputPath_temp_blocks,
                                                    os.path.join(out_tree_Dir, 'species.ratio'), outputPath_process_orthofind,
@@ -135,6 +138,9 @@ def main():
 
         # remove empty chromosome
         pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfiltered_empty_chr_Blocks, outputPath_finalBlocks)
+        '''
+        DRIMM后处理——更改位置
+        '''
 
     if after_manual:
         # process IAGS
