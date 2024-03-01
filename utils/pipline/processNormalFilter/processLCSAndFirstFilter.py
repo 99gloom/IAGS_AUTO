@@ -18,7 +18,7 @@ class processLCSAndFirstFilter:
         :param sp: 物种名列表
         :param chr_shape: 染色体类型 c/s
         '''
-        self.outdir_synteny = outdir
+        self.outdir = outdir
         self.outdir_rawBlock = outputDir_rawBlock
         self.sp = sp
         self.ratio = ''
@@ -140,27 +140,27 @@ class processLCSAndFirstFilter:
             sequences_ID[i] = sequence_ID
         return sequences, sequences_ID
 
-    def __matchingSequence(self, species_all_sequences, species_reassamble_sequences, species_all_sequences_name,
-                           species_reassamble_sequences_ID):
+    def __matchingSequence(self, species_all_sequences, species_reassemble_sequences, species_all_sequences_name,
+                           species_reassemble_sequences_ID):
         # 将两个序列做匹配
         block_range = {}
         for i in species_all_sequences.keys():
-            species_reassamble_sequence = species_reassamble_sequences[i]
+            species_reassemble_sequence = species_reassemble_sequences[i]
             # print(i)
             block_range[i] = {}
             for j in species_all_sequences[i].keys():
-                if j not in species_reassamble_sequence.keys():
+                if j not in species_reassemble_sequence.keys():
                     continue
                 else:
                     # print(j)
                     p = LCS()
                     p.input(species_all_sequences[i][j]
-                            , species_reassamble_sequence[j])
+                            , species_reassemble_sequence[j])
                     direction_list, lcslength_list = p.Compute_LCS()
                     lcs = p.printOneLCS()
                     for k in lcs:
                         genename = species_all_sequences_name[i][j][k[0]]
-                        ID = species_reassamble_sequences_ID[i][j][k[1]]
+                        ID = species_reassemble_sequences_ID[i][j][k[1]]
                         ID_split = ID.split('|')
                         block = ID_split[0][1:]
                         block_count = ID_split[1]
@@ -178,8 +178,8 @@ class processLCSAndFirstFilter:
     def __outSynteny(self, block_range, species_all_sequences_name, species_all_sequences):
         # 输出synteny文件
         for i in block_range.keys():
-            outfile = self.outdir_synteny + '/' + i + '.synteny'
-            outfile_name = self.outdir_synteny + '/' + i + '.synteny.genename'
+            outfile = self.outdir + '/' + i + '.synteny'
+            outfile_name = self.outdir + '/' + i + '.synteny.genename'
             outfile = open(outfile, 'w')
             outfile_name = open(outfile_name, 'w')
             for j in block_range[i].keys():
@@ -213,7 +213,7 @@ class processLCSAndFirstFilter:
 
     def __excute(self):
 
-        block_dir = self.outdir_synteny
+        block_dir = self.outdir
         species = self.sp
         speciesRatio = self.ratio
         syntenyFile = self.SyntenyPath
@@ -223,12 +223,12 @@ class processLCSAndFirstFilter:
         for i in species:
             blockSequences[i] = self.__readBlockSequence(block_dir + '/' + i + '.block')
         synteny = self.__syntenyDict(syntenyFile)
-        species_reassamble_sequences = {}
-        species_reassamble_sequences_ID = {}
+        species_reassemble_sequences = {}
+        species_reassemble_sequences_ID = {}
         for i in blockSequences.keys():
             sequences, sequences_ID = self.__assambleDrimmSequence(blockSequences[i], synteny)
-            species_reassamble_sequences[i] = sequences
-            species_reassamble_sequences_ID[i] = sequences_ID
+            species_reassemble_sequences[i] = sequences
+            species_reassemble_sequences_ID[i] = sequences_ID
 
         # 读取allsequence和name
         species_all_sequences = {}
@@ -240,8 +240,8 @@ class processLCSAndFirstFilter:
                 sequences_dir + '/' + i + '.all.sequence.genename')
 
         # 两个序列做匹配
-        block_range = self.__matchingSequence(species_all_sequences, species_reassamble_sequences,
-                                              species_all_sequences_name, species_reassamble_sequences_ID)
+        block_range = self.__matchingSequence(species_all_sequences, species_reassemble_sequences,
+                                              species_all_sequences_name, species_reassemble_sequences_ID)
         self.__outSynteny(block_range, species_all_sequences_name, species_all_sequences)
 
         # 通过synteny文件找满足条件的block，过滤不满足比例的
@@ -250,7 +250,7 @@ class processLCSAndFirstFilter:
         species_block_dict = {}
         for i in species:
             species_block_dict[i] = {}
-            block_synteny_file = self.outdir_synteny + '/' + i + '.synteny'
+            block_synteny_file = self.outdir + '/' + i + '.synteny'
             with open(block_synteny_file, 'r') as bsf:
                 for line in bsf:
                     temp = line.rstrip('\n').rstrip()
@@ -284,7 +284,7 @@ class processLCSAndFirstFilter:
             out_block_sequences = open(out_block_sequences, 'w')
             block_sequences = blockSequences[i]
             for j in block_sequences.keys():
-                if self.chr_shape == 's' or self.chr_shape == 'S':
+                if self.chr_shape == 's' :
                     out_block_sequences.write('s ')
                 else:
                     out_block_sequences.write('c ')
@@ -301,7 +301,7 @@ class processLCSAndFirstFilter:
 
         print("The following data is for reference only: ")
         for i in species:
-            block_synteny_file = self.outdir_synteny + '/' + i + '.synteny'
+            block_synteny_file = self.outdir + '/' + i + '.synteny'
             block_synteny_count = self.__syntenyCount(block_synteny_file)
             filter_synteny_count = {}
             syntenygenes_number = 0

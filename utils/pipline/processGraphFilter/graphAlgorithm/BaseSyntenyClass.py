@@ -39,7 +39,7 @@ class BaseSyntenyClass:
         BaseSyntenyClass.virtual_block_number += 1
         return res
 
-    def have_add_block(cls, l: set[str]):
+    def have_add_block(cls, l: set):
         for i in l:
             if i.startswith(BaseSyntenyClass.new_block_signal):
                 return i

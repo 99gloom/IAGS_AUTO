@@ -1,3 +1,0 @@
-CRB ratio: 0.0%
-Mode: GMP
-Estimated acc: 100.0%

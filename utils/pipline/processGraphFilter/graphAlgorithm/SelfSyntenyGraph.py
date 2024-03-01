@@ -12,8 +12,8 @@ class SelfSyntenyGraph(BaseSyntenyClass):
     def __init__(self, sp: str, dir: str, copy_number: int):
         '''
 
-        :param sp: 物种名
-        :param dir: 物种路径
+        :param sp: 物种名列表
+        :param dir: drimmBlocks文件路径
         :param copy_number: 物种拷贝数
         :return:
         '''

@@ -116,12 +116,7 @@ class processFinalFilter:
                         block_len[block] = length
                     else:
                         if block_len[block] < length:
-                            # print(block)
-                            # print(length)
-                            # print(block_len[block])
                             block_len[block] = length
-                            # print(block_len[block])
-                            # print('-----------------')
 
         with open(os.path.join(resultDir, 'blockindex.genenumber'), 'w') as f:
             f.write('blockID\tblockLength\n')

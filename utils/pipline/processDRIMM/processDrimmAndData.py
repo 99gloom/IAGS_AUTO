@@ -55,7 +55,7 @@ class processDrimm:
             output_block_files[speciesBlockItem] = os.path.join(self.drimmBlockDir,  speciesBlockItem + ".block")
 
             for s in speciesBlock[speciesBlockItem]:
-                if self.chr_shape == 's' or self.chr_shape == 'S':
+                if self.chr_shape == 's' :
                     output.write('s ')
                 else:
                     output.write('c ')

@@ -1,3 +1,0 @@
-CRB ratio: 1.11%
-Mode: GGHP
-Estimated acc: 99.5862207268%

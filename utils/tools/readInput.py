@@ -10,6 +10,8 @@ def process_input(parsers: argparse.ArgumentParser):
     dustLength = args.dustLength
     shape = args.shape
     model = args.model
+    dotplot = args.dotplot
+    expand = args.expand
     OrthogroupsPath = ''
     treePath = ''
     gff_path_list = []
@@ -42,4 +44,4 @@ def process_input(parsers: argparse.ArgumentParser):
     for i in range(len(gff_path_list)):
         temp = fileDir + gff_path_list[i]
         gff_path_list[i] = temp
-    return fileDir, OrthogroupsPath, treePath, gff_path_list, cycleLength, dustLength, shape, model
+    return fileDir, OrthogroupsPath, treePath, gff_path_list, cycleLength, dustLength, shape, model, dotplot, expand

@@ -10,6 +10,7 @@ from utils.tools.readInput import process_input
 from utils.pipline.processTREE import EvolutionaryTree as CT
 from utils.pipline.processNormalFilter import processEmptyChrAndBlockLength as pEmpty
 from utils.pipline.processNormalFilter import processLCSAndFirstFilter as pLCS, processFinalFilter as pFinal
+from utils.pipline.processGraphFilter.processExpandBlockByGraph import processGraphFilter
 from utils.pipline.processDRIMM import processOrthoFind as pO, processDrimmAndData as pD
 from utils.pipline.processIAGS import processIAGS as pIAGS
 from utils.tools.makeDotplot.makeProfile import check_copy_number_validity
@@ -29,11 +30,17 @@ def main():
                          help=('chromosomes shape: \'s\' represents a string chromosome, '
                                'and \'c\' represents a circular chromosome. '
                                'The default value is \'s\'.'))
-    parsers.add_argument('-m', '--model', required=False, type=str, default=None,choices=['manual','continue','dotplot'],
+    parsers.add_argument('-m', '--model', required=False, type=str, default=None,choices=['manual','continue'],
                          help=('model: \'manual\' is for manual modification of outgroup or block '
                                'and \'continue\' for continue running the program after manually modifying the file. '
                                'Default is to run automatically without interruption. '
-                               '\'dotplot\' is generate a two-by-two dotplot for each species'))
+                               ))
+    parsers.add_argument('--dotplot', required=False, action='store_true',
+                         help='\'dotplot\' is generate a two-by-two dotplot for each species')
+
+    parsers.add_argument('-e','--expand', required=False, action='store_true',
+                         help='\'expand\' is increasing synteny block coverage by graph algorithms.')
+
 
     fileDir,\
     orthogroups_path, \
@@ -42,7 +49,9 @@ def main():
     cycleLength, \
     dustLength, \
     chr_shape, \
-    manual_option = process_input(parsers)
+    manual_option, \
+    dotplot, \
+    expand= process_input(parsers)
 
     pre_manual = True
     after_manual = True
@@ -72,15 +81,22 @@ def main():
     outputPath_process_orthofind = make_dir(os.path.join(out_process_Drimm, 'Process_OrthoFind'))
     outputPath_DRIMM_Synteny_Files = make_dir(os.path.join(out_process_Drimm, "Drimm_Synteny_Output"))
 
-    # 普通过滤路径
-    out_filter = make_dir(os.path.join(out_process_Drimm, "Filter"))
-    outputPath_drimmBlocks = make_dir(os.path.join(out_filter, 'Drimm_Blocks'))
-    outputPath_unfiltered_empty_chr_Blocks = make_dir(os.path.join(out_filter, 'Unfiltered_Empty_Chr_Blocks'))
-    outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_Blocks'))
-    outputPath_temp_blocks = make_dir(os.path.join(out_filter, 'Filter_temp_file'))
+    # not expand
+    if not expand:
+        out_filter = make_dir(os.path.join(out_process_Drimm, "Filter"))
+        outputPath_drimmBlocks = make_dir(os.path.join(out_filter, 'Drimm_Blocks'))
+        outputPath_unfilter_empty_chr_Blocks = make_dir(os.path.join(out_filter, 'Unfilter_Empty_Chr_Blocks'))
+        outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_Blocks'))
+        outputPath_temp_blocks = make_dir(os.path.join(out_filter, 'Filter_temp_file'))
 
+    # expand
+    else:
+        out_filter = make_dir(os.path.join(out_process_Drimm, "Graph_Filter"))
+        outputPath_drimmBlocks = make_dir(os.path.join(out_filter, 'Drimm_Blocks'))
+        merge_info_dir  = make_dir(os.path.join(out_filter, 'merge_info_dir'))
+        outputPath_unfilter_empty_chr_Blocks = make_dir(os.path.join(out_filter, 'Unfilter_Empty_Chr_Blocks'))
+        outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_blocks'))
 
-    # manual_option 手动添加block或者更换外族判断
 
     # 初始化树
     evolutionary_tree = CT.Evolutionary_tree(tree_file_path)
@@ -95,21 +111,19 @@ def main():
                                                outputPath_process_orthofind,
                                                out_tree_Dir + 'species.ratio')
 
-        # check copy number
+        # check part
+        # copy number
         check_copy_number_validity(processOrthoFind.species_ratio, processOrthoFind.rate_dir, Result_OutputDir)
-
-
-        # if user doesn't input dustLength, using default number
+        # dustLength
         if not dustLength:
             dustLength = processOrthoFind.default_dustLength
-
-        # make a profile for user to evaluate
-        if manual_option == 'dotplot':
+        # dotplot
+        if dotplot:
             out_dotplot = make_dir(os.path.join(Result_OutputDir, 'Dotplot'))
             process_plot(processOrthoFind.sp, outputPath_process_orthofind, fileDir, out_dotplot)
             exit()
 
-        # process DRIMM
+        # DRIMM
         processDRIMM = pD.processDrimm(outputPath_process_orthofind + "sample.sequence",
                                        outputPath_DRIMM_Synteny_Files,
                                        cycleLength,
@@ -122,25 +136,38 @@ def main():
         '''
         DRIMM后处理——更改位置
         '''
-        # process LCS and fist filter
-        processLCS = pLCS.processLCSAndFirstFilter(outputPath_drimmBlocks, outputPath_temp_blocks,
-                                                   os.path.join(out_tree_Dir, 'species.ratio'), outputPath_process_orthofind,
-                                                   os.path.join(outputPath_DRIMM_Synteny_Files, "synteny.txt"),
-                                                   processOrthoFind.sp, chr_shape)
+        if not expand:
+            # LCS and fist filter
+            pLCS.processLCSAndFirstFilter(outputPath_drimmBlocks, outputPath_temp_blocks,
+                                                       os.path.join(out_tree_Dir, 'species.ratio'), outputPath_process_orthofind,
+                                                       os.path.join(outputPath_DRIMM_Synteny_Files, "synteny.txt"),
+                                                       processOrthoFind.sp, chr_shape)
 
-        # process final filter and get block length
-        processFinalFilter = pFinal.processFinalFilter(processOrthoFind.sp,
-                                                       outputPath_temp_blocks,
-                                                       outputPath_drimmBlocks,
-                                                       outputPath_unfiltered_empty_chr_Blocks,
-                                                       chr_shape)
-        shutil.rmtree(outputPath_temp_blocks)
+            # final filter and get block length
+            pFinal.processFinalFilter(processOrthoFind.sp,
+                                      outputPath_temp_blocks,
+                                      outputPath_drimmBlocks,
+                                      outputPath_unfilter_empty_chr_Blocks,
+                                      chr_shape)
+            shutil.rmtree(outputPath_temp_blocks)
 
-        # remove empty chromosome
-        pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfiltered_empty_chr_Blocks, outputPath_finalBlocks)
-        '''
-        DRIMM后处理——更改位置
-        '''
+            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
+            '''
+            DRIMM后处理——更改位置
+            '''
+        else:
+            processGraphFilter(processOrthoFind.sp,
+                               os.path.join(out_tree_Dir, 'species.ratio'),
+                               evolutionary_tree.parser_merger_order(),
+                               outputPath_drimmBlocks, merge_info_dir,
+                               outputPath_process_orthofind,
+                               os.path.join(outputPath_DRIMM_Synteny_Files, "synteny.txt"),
+                               outputPath_unfilter_empty_chr_Blocks,
+                               chr_shape)
+
+
+            # remove empty chromosome
+            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
 
     if after_manual:
         # process IAGS

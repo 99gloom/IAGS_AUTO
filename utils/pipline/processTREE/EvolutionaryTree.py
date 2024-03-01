@@ -1,23 +1,24 @@
 import os.path
-
 from treelib import Tree, Node
-
 
 class Evolutionary_tree():
     def __init__(self, path: str):
+        self.path = path
         self.tree, \
         self.computing_list, \
         self.leaves_nodes_id, \
         self.non_leaves_node_id, \
         self.painting_anc_node \
-            = self.__calculate_tree(path)
+            = self.__calculate_tree(self.path)
         self.all_nodes_id_without_root = self.leaves_nodes_id + self.non_leaves_node_id
         self.all_nodes_id_without_root.remove('root')
         self.all_nodes_id_without_root.sort()
+        self.tree_no_WGD = self.__get_tree_no_WGD()
+
 
     def __calculate_tree(self, tree_path):
         tree_format = self.__get_tree_file_info(tree_path)
-        tree = self.__create_tree(tree_format)
+        tree = self.__parser_tree(tree_format)
         byte_string_tree_sp_name = tree.show(stdout=False)
         byte_string_tree_copy_number = tree.show(data_property='real',stdout=False)
         print(byte_string_tree_sp_name)
@@ -35,6 +36,50 @@ class Evolutionary_tree():
         self.__save_computing_order(dir)
         self.__save_all_ratio(dir)
         self.__save_root_info(dir)
+
+    def parser_merger_order(self):
+        # 获取graph融合需要的order
+        tree_no_WGD = self.tree_no_WGD
+        all_nodes = tree_no_WGD.all_nodes()
+        all_nodes = [node for node in all_nodes if node not in tree_no_WGD.leaves()]  # 筛选非叶子节点
+        all_nodes.sort(key=lambda x: tree_no_WGD.depth(x.identifier), reverse=True)
+        order = {}
+        while all_nodes:
+            max_depth_non_leaf = all_nodes[0]
+            children = tree_no_WGD.children(max_depth_non_leaf.identifier)
+            order[max_depth_non_leaf.identifier] = [
+                children[0].identifier, children[1].identifier
+            ]
+            all_nodes.pop(0)
+        return order
+
+    def __get_tree_no_WGD(self):
+        with open(self.path) as tf:
+            for line in tf:
+                tree_info = line.rstrip('\n').rstrip(' ')
+
+        # 将树文件分开，只保留其物种
+        tree_format = []
+        str_temp = ''
+        for i in tree_info:
+            if i == ',' or i == '[' or i == ']':
+                if str_temp:
+                    tree_format.append(str_temp)
+                    str_temp = ''
+                continue
+            elif i == '(' or i == ')':
+                if str_temp:
+                    tree_format.append(str_temp)
+                    str_temp = ''
+                tree_format.append(i)
+            else:
+                str_temp += i
+        tree_format_no_WGD = []
+        for i in tree_format:
+            if i != 'WGD':
+                tree_format_no_WGD.append(i)
+        res = self.__parser_tree(tree_format_no_WGD)
+        return res
 
     def __save_root_info(self, dir):
         if dir[-1] != '/':
@@ -76,7 +121,7 @@ class Evolutionary_tree():
             for line in tf:
                 tree_info = line.rstrip('\n').rstrip(' ')
 
-        # 将树文件分开，只保留括号及其物种
+        # 将树文件分开，只保留WGD括号及其物种
         tree_format = []
         str_temp = ''
         for i in tree_info:
@@ -95,7 +140,7 @@ class Evolutionary_tree():
         # print(tree_format)
         return tree_format
 
-    def __create_tree(self, tree_format):
+    def __parser_tree(self, tree_format):
         tree = Tree()
         current_ancestor_node_point = Node()
         last_ancestor_node_point = Node()

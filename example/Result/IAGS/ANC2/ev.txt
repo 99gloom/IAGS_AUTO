@@ -1,3 +1,0 @@
-CRB ratio: 3.8899999999999997%
-Mode: MultiCopyGMP
-Estimated acc: 97.82640064899999%
