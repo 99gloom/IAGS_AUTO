@@ -253,7 +253,7 @@ class processLCSAndFirstFilter:
             block_synteny_file = self.outdir + '/' + i + '.synteny'
             with open(block_synteny_file, 'r') as bsf:
                 for line in bsf:
-                    temp = line.rstrip('\n').rstrip()
+                    temp = line.strip()
                     itemset = temp.split(' ')
                     header = itemset[0].split(':')
                     block = header[0]

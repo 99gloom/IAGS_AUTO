@@ -136,8 +136,8 @@ class GraphFilter():
 
     def _outSynteny(self, block_range, species_all_sequences_name, species_all_sequences):
         for i in block_range.keys():
-            outfile = os.path.join(self.output_dir, i + '.final.synteny')
-            outfile_name = os.path.join(self.output_dir, i + '.final.synteny.genename')
+            outfile = os.path.join(self.output_dir, i + '.synteny')
+            outfile_name = os.path.join(self.output_dir, i + '.synteny.genename')
             outfile = open(outfile, 'w')
             outfile_name = open(outfile_name, 'w')
             for j in block_range[i].keys():
@@ -192,14 +192,14 @@ class GraphFilter():
         return
 
     def matchLCS(self):
-        blockSequences = {}
+        species_block = {}
         for i in self.species:
-            blockSequences[i] = self._readMemoryBlock(self.block_lists[i])
+            species_block[i] = self._readMemoryBlock(self.block_lists[i])
         synteny = self._readMemorySynteny(self.synteny_dict)
         species_reassemble_sequences = {}
         species_reassemble_sequences_ID = {}
-        for i in blockSequences.keys():
-            sequences,sequences_ID = self._assambleDrimmSequence(blockSequences[i], synteny)
+        for i in species_block.keys():
+            sequences,sequences_ID = self._assambleDrimmSequence(species_block[i], synteny)
             species_reassemble_sequences[i] = sequences
             species_reassemble_sequences_ID[i] = sequences_ID
 
@@ -211,51 +211,51 @@ class GraphFilter():
             species_all_sequences_name[i] = self._readFileSequence(self.sequences_dir + i + '.all.sequence.genename')
 
         # 两个序列做匹配
-        block_range = self._matchingSequence(species_all_sequences, species_reassemble_sequences,
-                                             species_all_sequences_name, species_reassemble_sequences_ID)
-        self._outSynteny(block_range, species_all_sequences_name, species_all_sequences)
+        # block_range = self._matchingSequence(species_all_sequences, species_reassemble_sequences,
+        #                                      species_all_sequences_name, species_reassemble_sequences_ID)
+        # self._outSynteny(block_range, species_all_sequences_name, species_all_sequences)
 
-
-        # 通过synteny文件找满足条件的block，过滤不满足比例的
+        #
         blocks_ratio = {}
+        block_copy_number = {}
         block_list = []
-        species_block_dict = {}
         for i in self.species:
-            species_block_dict[i] = {}
-            block_synteny_file = os.path.join(self.output_dir, i + '.final.synteny')
-            with open(block_synteny_file,'r') as bsf:
-                while True:
-                    line = bsf.readline().strip()
-                    if not line:
-                        break
-                    itemset = line.split(' ')
-                    header = itemset[0].split(':')
-                    block = header[0]
-                    if block not in species_block_dict[i].keys():
-                        species_block_dict[i][block] = 1
+            block_copy_number[i] = {}
+            block_sequences = species_block[i]
+            for chr_num, item in block_sequences.items():
+                for j in item:
+                    if j.startswith('-'):
+                        block = j[1:]
                     else:
-                        species_block_dict[i][block] += 1
+                        block = j
+
+                    if block not in block_copy_number[i].keys():
+                        block_copy_number[i][block] = 1
+                    else:
+                        block_copy_number[i][block] += 1
                     if block not in block_list:
                         block_list.append(block)
-        for i in block_list:
-            ratio = ''
-            for j in self.species:
-                if i not in species_block_dict[j].keys():
-                    ratio += '0:'
-                else:
-                    ratio+=str(species_block_dict[j][i])+':'
-            ratio = ratio[:-1]
-            blocks_ratio[i] = ratio
 
-        filter_block = []
+        for i in block_list:
+            ratio = []
+            for sp in self.species:
+                if i not in block_copy_number[sp].keys():
+                    ratio.append(0)
+                else:
+                    ratio.append(block_copy_number[sp][i])
+            ratio_str = ':'.join(list(map(str,ratio)))
+            blocks_ratio[i] = ratio_str
+
+        required_block = []
         for i in blocks_ratio.keys():
-            if blocks_ratio[i] != self.ratio:
-                filter_block.append(i)
-        # 输出final block
+            if blocks_ratio[i] == self.ratio:
+                print(i)
+                required_block.append(i)
+
         for i in self.species:
             out_block_sequences = os.path.join(self.output_dir, i + '.unevaluated.block')
             out_block_sequences = open(out_block_sequences,'w')
-            block_sequences = blockSequences[i]
+            block_sequences = species_block[i]
             for j in block_sequences.keys():
                 if self.chr_shape == 's':
                     out_block_sequences.write('s ')
@@ -267,17 +267,46 @@ class GraphFilter():
                         block = k[1:]
                     else:
                         block = k
-                    if block not in filter_block:
+                    if block in required_block:
                         out_block_sequences.write(k+' ')
                 out_block_sequences.write('\n')
             out_block_sequences.close()
+
+        for i in self.species:
+            block_synteny_file_path = os.path.join(self.output_dir, i + '.synteny')
+            block_final_synteny_file_path = os.path.join(self.output_dir, i + '.final.synteny')
+            with open(block_synteny_file_path, 'r') as bsf:
+                with open(block_final_synteny_file_path, 'w') as bfsf:
+                    for line in bsf:
+                        line = line.strip()
+                        itemset = line.split(' ')
+                        block = itemset[0].split(':')[0]
+                        if block in required_block:
+                            for item in itemset:
+                                bfsf.write(item + ' ')
+                            bfsf.write('\n')
+
+        for i in self.species:
+            block_synteny_file_path = os.path.join(self.output_dir, i + '.synteny.genename')
+            block_final_synteny_file_path = os.path.join(self.output_dir, i + '.final.synteny.genename')
+            with open(block_synteny_file_path, 'r') as bsf:
+                with open(block_final_synteny_file_path, 'w') as bfsf:
+                    for line in bsf:
+                        line = line.strip()
+                        itemset = line.split(' ')
+                        block = itemset[0].split(':')[0]
+                        if block in required_block:
+                            for item in itemset:
+                                bfsf.write(item + ' ')
+                            bfsf.write('\n')
+
 
         for i in self.species:
             block_synteny_count = self._syntenyCount(self.synteny_dict)
             filter_synteny_count = {}
             syntenygenes_number = 0
             for j in block_synteny_count.keys():
-                if j not in filter_block:
+                if j not in required_block:
                     filter_synteny_count[j] = block_synteny_count[j]
                     syntenygenes_number += filter_synteny_count[j]
             allgenes_number = 0

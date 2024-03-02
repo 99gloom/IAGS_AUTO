@@ -124,14 +124,14 @@ def main():
             exit()
 
         # DRIMM
-        processDRIMM = pD.processDrimm(outputPath_process_orthofind + "sample.sequence",
-                                       outputPath_DRIMM_Synteny_Files,
-                                       cycleLength,
-                                       dustLength,
-                                       processOrthoFind.speciesAndChrLen,
-                                       processOrthoFind.sp,
-                                       outputPath_drimmBlocks,
-                                       chr_shape)
+        # processDRIMM = pD.processDrimm(outputPath_process_orthofind + "sample.sequence",
+        #                                outputPath_DRIMM_Synteny_Files,
+        #                                cycleLength,
+        #                                dustLength,
+        #                                processOrthoFind.speciesAndChrLen,
+        #                                processOrthoFind.sp,
+        #                                outputPath_drimmBlocks,
+        #                                chr_shape)
 
         '''
         DRIMM后处理——更改位置
@@ -167,15 +167,15 @@ def main():
 
 
             # remove empty chromosome
-            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
+            # pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
 
-    if after_manual:
-        # process IAGS
-        processIAGS = pIAGS.ProcessIAGS(out_tree_Dir, outputPath_finalBlocks, out_IAGS, evolutionary_tree)
-        processIAGS.process_ancestor_block_and_evaluate()
-        processIAGS.process_painting()
-        processIAGS.process_Calculating_Fissions_and_Fusions()
-        shutil.rmtree(processIAGS.multiplied_file_dir)
+    # if after_manual:
+    #     # process IAGS
+    #     processIAGS = pIAGS.ProcessIAGS(out_tree_Dir, outputPath_finalBlocks, out_IAGS, evolutionary_tree)
+    #     processIAGS.process_ancestor_block_and_evaluate()
+    #     processIAGS.process_painting()
+    #     processIAGS.process_Calculating_Fissions_and_Fusions()
+    #     shutil.rmtree(processIAGS.multiplied_file_dir)
 
 
 

@@ -1,0 +1,23 @@
+Virtual_0:641 645:DCW HN1 
+Virtual_1:634 645:DCW HN1 
+Virtual_4:695 691:DCW 
+Virtual_6:515 574:DCW HN1 
+Virtual_7:596 574:DCW 
+Virtual_8:600 603:DCW YMR 
+Virtual_9:602 589:DCW 
+Virtual_11:711 729:DCW 
+Virtual_12:779 785:DCW 
+Virtual_13:790 789:DCW 
+Virtual_14:788 789:DCW 
+Virtual_46:720 564:DCW HN1 YMR 
+Virtual_15:718 798:DCW 
+Virtual_16:707 550:DCW 
+Virtual_17:709 713:DCW PB 
+Virtual_18:728 573:DCW 
+Virtual_19:737 736:DCW 
+Virtual_20:802 826:DCW HN1 
+Virtual_45:796 621:YMR 
+Virtual_21:472 552:DCW PB 
+Virtual_23:601 594:DCW 
+Virtual_25:803 755:DCW HN1 
+Virtual_28:631 623:DCW HN1 
