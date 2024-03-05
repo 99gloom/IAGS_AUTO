@@ -31,7 +31,7 @@ def syntenyGraphMerge(species, ratio_path, order, drimmBlocks_dir, res_dir):
     syn['root'].out_res(res_dir, root_name, virtual_name)
 
 def processGraphFilter(species, ratio_path, order, drimmBlocks_dir, merge_dir, sequences_dir,
-                       synteny_path, final_dir, char_shape):
+                       synteny_path, manual_block_dir, unfiltered_block_dir, char_shape):
     # merge
     syntenyGraphMerge(species, ratio_path, order, drimmBlocks_dir, merge_dir)
 
@@ -39,13 +39,13 @@ def processGraphFilter(species, ratio_path, order, drimmBlocks_dir, merge_dir, s
     finder = FindBack(merge_dir, drimmBlocks_dir, species)
 
     # 通过拷贝数过滤，得到finalBlock
-    filterProcess = GraphFilter(
-        ratio_path, finder.get_blocks_lists(), sequences_dir,
-        finder.get_expand_manual_synteny(os.path.join(synteny_path)),
-        species, final_dir, char_shape
-    )
+    filterProcess = GraphFilter(ratio_path, finder.get_blocks_lists(), sequences_dir,
+                                finder.get_expand_manual_synteny(os.path.join(synteny_path)), species, manual_block_dir,
+                                unfiltered_block_dir, char_shape)
     filterProcess.matchLCS()
     filterProcess.processGenenumber()
-    return
+
+
+    return filterProcess
 
 

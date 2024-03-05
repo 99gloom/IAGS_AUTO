@@ -82,7 +82,7 @@ IAGS_AUTO工具需要三种文件：各物种gff文件、orthogroup.tsv文件，
 <td>"c"</td>
 </tr>
 <tr>
-<td rowspan="3">-m, --model</td>
+<td rowspan="2">-m, --model</td>
 <td>"manual"</td>
 <td rowspan="2">默认为None。当用户需要手动指定outgroup时，首先使用"manual"模式生成节点计算顺序文件 "model_and_outgroup.txt"，修改其使用的outgroup信息。再使用"continue"模式，基于上一步修改的问题件生成结果。</td>
 </tr>
@@ -90,8 +90,14 @@ IAGS_AUTO工具需要三种文件：各物种gff文件、orthogroup.tsv文件，
 <td>"continue"</td>
 </tr>
 <tr>
-<td>"dotplot"</td>
+<td>"--dotplot"</td>
+<td>-</td>
 <td>生成各物种两两之间的dotplot图</td>
+</tr>
+<tr>
+<td>"--expand"</td>
+<td>-</td>
+<td>通过图扩充算法增加共线块覆盖度</td>
 </tr>
 </table>
 
@@ -128,8 +134,13 @@ model_and_outgroup.txt为各祖先节点所用外族信息，如需手动指定�
   ```shell
   iags_auto -f ./example -c 60 -d 12 -s s
   ```
++ 3.通过图扩充算法运行
   
-+ 3.手动指定外族
+  ```shell
+  python IAGS_AUTO -f ./example --expand
+  ```
+  
++ 4.手动指定外族
   ```shell
   iags_auto -f ./example -m manual
   ```
@@ -137,7 +148,7 @@ model_and_outgroup.txt为各祖先节点所用外族信息，如需手动指定�
   ```shell
   iags_auto -f ./example -m continue
   ```
-+ 4.绘制dotplot
++ 5.绘制dotplot
   ```shell
   iags_auto -f ./example -m dotplot
   ```

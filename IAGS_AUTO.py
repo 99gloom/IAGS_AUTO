@@ -15,6 +15,7 @@ from utils.pipline.processDRIMM import processOrthoFind as pO, processDrimmAndDa
 from utils.pipline.processIAGS import processIAGS as pIAGS
 from utils.tools.makeDotplot.makeProfile import check_copy_number_validity
 from utils.tools.makeDotplot.plot import process_plot
+from utils.tools.mapping_func import mapping,mapping_back
 
 parsers = argparse.ArgumentParser(description='The project is based on IAGS and automates process')
 
@@ -79,23 +80,29 @@ def main():
     out_IAGS = make_dir(os.path.join(Result_OutputDir, 'IAGS'))
 
     outputPath_process_orthofind = make_dir(os.path.join(out_process_Drimm, 'Process_OrthoFind'))
-    outputPath_DRIMM_Synteny_Files = make_dir(os.path.join(out_process_Drimm, "Drimm_Synteny_Output"))
+    outputPath_DRIMM_Synteny_Files = make_dir(os.path.join(out_process_Drimm, "Drimm_Synteny"))
 
     # not expand
     if not expand:
         out_filter = make_dir(os.path.join(out_process_Drimm, "Filter"))
         outputPath_drimmBlocks = make_dir(os.path.join(out_filter, 'Drimm_Blocks'))
-        outputPath_unfilter_empty_chr_Blocks = make_dir(os.path.join(out_filter, 'Unfilter_Empty_Chr_Blocks'))
         outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_Blocks'))
-        outputPath_temp_blocks = make_dir(os.path.join(out_filter, 'Filter_temp_file'))
+
+        outputPath_others = make_dir(os.path.join(out_filter, 'Temp_Info'))
+        outputPath_unfilter_empty_chr_Blocks = make_dir(os.path.join(outputPath_others, 'Unfilter_Empty_Chr_Blocks'))
+        outputPath_temp_blocks = make_dir(os.path.join(outputPath_others, 'Filter_temp_file'))
 
     # expand
     else:
         out_filter = make_dir(os.path.join(out_process_Drimm, "Graph_Filter"))
         outputPath_drimmBlocks = make_dir(os.path.join(out_filter, 'Drimm_Blocks'))
-        merge_info_dir  = make_dir(os.path.join(out_filter, 'merge_info_dir'))
-        outputPath_unfilter_empty_chr_Blocks = make_dir(os.path.join(out_filter, 'Unfilter_Empty_Chr_Blocks'))
-        outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_blocks'))
+        outputPath_finalBlocks = make_dir(os.path.join(out_filter, 'Final_Blocks'))
+        manual_Blocks = make_dir(os.path.join(out_filter, 'Manual_Blocks'))
+
+        outputPath_others = make_dir(os.path.join(out_filter, 'Temp_Info'))
+        merge_info_dir  = make_dir(os.path.join(outputPath_others, 'Merge_Info'))
+        mapping_dir = make_dir(os.path.join(outputPath_others, 'Mapping_info'))
+        outputPath_unfilter_empty_chr_Blocks = make_dir(os.path.join(outputPath_others, 'Unfilter_Empty_Chr_Blocks'))
 
 
     # 初始化树
@@ -124,14 +131,14 @@ def main():
             exit()
 
         # DRIMM
-        # processDRIMM = pD.processDrimm(outputPath_process_orthofind + "sample.sequence",
-        #                                outputPath_DRIMM_Synteny_Files,
-        #                                cycleLength,
-        #                                dustLength,
-        #                                processOrthoFind.speciesAndChrLen,
-        #                                processOrthoFind.sp,
-        #                                outputPath_drimmBlocks,
-        #                                chr_shape)
+        processDRIMM = pD.processDrimm(outputPath_process_orthofind + "sample.sequence",
+                                       outputPath_DRIMM_Synteny_Files,
+                                       cycleLength,
+                                       dustLength,
+                                       processOrthoFind.speciesAndChrLen,
+                                       processOrthoFind.sp,
+                                       outputPath_drimmBlocks,
+                                       chr_shape)
 
         '''
         DRIMM后处理——更改位置
@@ -156,26 +163,36 @@ def main():
             DRIMM后处理——更改位置
             '''
         else:
-            processGraphFilter(processOrthoFind.sp,
-                               os.path.join(out_tree_Dir, 'species.ratio'),
-                               evolutionary_tree.parser_merger_order(),
-                               outputPath_drimmBlocks, merge_info_dir,
+            graph_filter = processGraphFilter(processOrthoFind.sp, os.path.join(out_tree_Dir, 'species.ratio'),
+                               evolutionary_tree.parser_merger_order(), outputPath_drimmBlocks, merge_info_dir,
                                outputPath_process_orthofind,
-                               os.path.join(outputPath_DRIMM_Synteny_Files, "synteny.txt"),
+                               os.path.join(outputPath_DRIMM_Synteny_Files, "synteny.txt"), manual_Blocks,
                                outputPath_unfilter_empty_chr_Blocks,
                                chr_shape)
 
 
             # remove empty chromosome
-            # pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
+            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
 
-    # if after_manual:
-    #     # process IAGS
-    #     processIAGS = pIAGS.ProcessIAGS(out_tree_Dir, outputPath_finalBlocks, out_IAGS, evolutionary_tree)
-    #     processIAGS.process_ancestor_block_and_evaluate()
-    #     processIAGS.process_painting()
-    #     processIAGS.process_Calculating_Fissions_and_Fusions()
-    #     shutil.rmtree(processIAGS.multiplied_file_dir)
+            mapping(graph_filter.manual_mapping, outputPath_finalBlocks, mapping_dir)
+
+
+    if after_manual:
+        # process IAGS
+        if not expand:
+            processIAGS = pIAGS.ProcessIAGS(out_tree_Dir, outputPath_finalBlocks, out_IAGS, evolutionary_tree)
+            processIAGS.process_ancestor_block_and_evaluate()
+            processIAGS.process_painting()
+            processIAGS.process_Calculating_Fissions_and_Fusions()
+            shutil.rmtree(processIAGS.multiplied_file_dir)
+
+        else:
+            processIAGS = pIAGS.ProcessIAGS(out_tree_Dir, mapping_dir, out_IAGS, evolutionary_tree)
+            processIAGS.process_ancestor_block_and_evaluate()
+            processIAGS.process_painting()
+            processIAGS.process_Calculating_Fissions_and_Fusions()
+            mapping_back(mapping_dir, out_IAGS)
+            shutil.rmtree(processIAGS.multiplied_file_dir)
 
 
 

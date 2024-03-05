@@ -1,16 +1,21 @@
+from typing import List
+
 from utils.tools.LCS import LCS
 from utils.tools.makeDirFunc import make_dir
 import os
 
 class GraphFilter():
     def __init__(self, ratioPath: str, block_lists: dict, sequences_dir:str, synteny_dict: dict,
-                 species:list, output_dir:str, chr_shape: str):
+                 species:list, manual_block_dir:str, unfilter_block_dir:str, chr_shape: str):
+        self.manual_num = 100000
+        self.manual_mapping = {}
         self.block_lists = block_lists
         self.synteny_dict = synteny_dict
         self.species = species
         self.chr_shape = chr_shape
         self.sequences_dir = sequences_dir
-        self.output_dir = output_dir
+        self.manual_block_dir = manual_block_dir
+        self. unfilter_block_dir = unfilter_block_dir
         self.ratio = ''
         ratioDir = {}
         with open(ratioPath, 'r') as rf:
@@ -23,7 +28,7 @@ class GraphFilter():
         self.ratio = self.ratio[:-1]
 
         # make_dir
-        make_dir(self.output_dir)
+        make_dir(self.manual_block_dir)
 
     def _readMemoryBlock(self, block_list: list):
         chr = []
@@ -136,8 +141,8 @@ class GraphFilter():
 
     def _outSynteny(self, block_range, species_all_sequences_name, species_all_sequences):
         for i in block_range.keys():
-            outfile = os.path.join(self.output_dir, i + '.synteny')
-            outfile_name = os.path.join(self.output_dir, i + '.synteny.genename')
+            outfile = os.path.join(self.manual_block_dir, i + '.manual.synteny')
+            outfile_name = os.path.join(self.manual_block_dir, i + '.manual.synteny.genename')
             outfile = open(outfile, 'w')
             outfile_name = open(outfile_name, 'w')
             for j in block_range[i].keys():
@@ -172,7 +177,7 @@ class GraphFilter():
     def processGenenumber(self):
         block_len = {}
         for i in self.species:
-            with open(os.path.join(self.output_dir, i + '.final.synteny'), 'r') as sf:
+            with open(os.path.join(self.unfilter_block_dir, i + '.final.synteny'), 'r') as sf:
                 for line in sf:
                     temp = line
                     temp = temp.rstrip('\n').rstrip()
@@ -185,11 +190,23 @@ class GraphFilter():
                         if block_len[block] < length:
                             block_len[block] = length
 
-        with open(os.path.join(self.output_dir, 'blockindex.genenumber'), 'w') as f:
+        with open(os.path.join(self.unfilter_block_dir, 'blockindex.genenumber'), 'w') as f:
             f.write('blockID\tblockLength\n')
             for i, j in block_len.items():
                 f.write(i + '\t' + str(j) + '\n')
         return
+
+    def _get_manual_mapping_start(self, l:List[str]):
+        max_val = 0
+        for i in l:
+            if i.isdigit():
+                if max_val < int(i):
+                    max_val = int(i)
+        count = 0
+        while (max_val != 0):
+            max_val = max_val // 10
+            count += 1
+        return 10**(count + 1)
 
     def matchLCS(self):
         species_block = {}
@@ -211,9 +228,9 @@ class GraphFilter():
             species_all_sequences_name[i] = self._readFileSequence(self.sequences_dir + i + '.all.sequence.genename')
 
         # 两个序列做匹配
-        # block_range = self._matchingSequence(species_all_sequences, species_reassemble_sequences,
-        #                                      species_all_sequences_name, species_reassemble_sequences_ID)
-        # self._outSynteny(block_range, species_all_sequences_name, species_all_sequences)
+        block_range = self._matchingSequence(species_all_sequences, species_reassemble_sequences,
+                                             species_all_sequences_name, species_reassemble_sequences_ID)
+        self._outSynteny(block_range, species_all_sequences_name, species_all_sequences)
 
         #
         blocks_ratio = {}
@@ -222,8 +239,14 @@ class GraphFilter():
         for i in self.species:
             block_copy_number[i] = {}
             block_sequences = species_block[i]
+            manual_file = open((os.path.join(self.manual_block_dir, i + '.manual.block')), 'w')
             for chr_num, item in block_sequences.items():
+                if self.chr_shape == 's':
+                    manual_file.write('s ')
+                else:
+                    manual_file.write('c ')
                 for j in item:
+                    manual_file.write(j+' ')
                     if j.startswith('-'):
                         block = j[1:]
                     else:
@@ -235,7 +258,8 @@ class GraphFilter():
                         block_copy_number[i][block] += 1
                     if block not in block_list:
                         block_list.append(block)
-
+                manual_file.write('\n')
+            manual_file.close()
         for i in block_list:
             ratio = []
             for sp in self.species:
@@ -249,11 +273,16 @@ class GraphFilter():
         required_block = []
         for i in blocks_ratio.keys():
             if blocks_ratio[i] == self.ratio:
-                print(i)
                 required_block.append(i)
 
+        self.manual_num = self._get_manual_mapping_start(required_block)
+        manual_block = sorted([i for i in required_block if not i.isdigit()])
+        for i in manual_block:
+            self.manual_mapping[i] = str(self.manual_num)
+            self.manual_num += 1
+
         for i in self.species:
-            out_block_sequences = os.path.join(self.output_dir, i + '.unevaluated.block')
+            out_block_sequences = os.path.join(self.unfilter_block_dir, i + '.unevaluated.block')
             out_block_sequences = open(out_block_sequences,'w')
             block_sequences = species_block[i]
             for j in block_sequences.keys():
@@ -273,8 +302,8 @@ class GraphFilter():
             out_block_sequences.close()
 
         for i in self.species:
-            block_synteny_file_path = os.path.join(self.output_dir, i + '.synteny')
-            block_final_synteny_file_path = os.path.join(self.output_dir, i + '.final.synteny')
+            block_synteny_file_path = os.path.join(self.manual_block_dir, i + '.manual.synteny')
+            block_final_synteny_file_path = os.path.join(self.unfilter_block_dir, i + '.final.synteny')
             with open(block_synteny_file_path, 'r') as bsf:
                 with open(block_final_synteny_file_path, 'w') as bfsf:
                     for line in bsf:
@@ -287,8 +316,8 @@ class GraphFilter():
                             bfsf.write('\n')
 
         for i in self.species:
-            block_synteny_file_path = os.path.join(self.output_dir, i + '.synteny.genename')
-            block_final_synteny_file_path = os.path.join(self.output_dir, i + '.final.synteny.genename')
+            block_synteny_file_path = os.path.join(self.manual_block_dir, i + '.manual.synteny.genename')
+            block_final_synteny_file_path = os.path.join(self.unfilter_block_dir, i + '.final.synteny.genename')
             with open(block_synteny_file_path, 'r') as bsf:
                 with open(block_final_synteny_file_path, 'w') as bfsf:
                     for line in bsf:

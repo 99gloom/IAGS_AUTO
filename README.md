@@ -82,7 +82,7 @@ represents circular chromosomes.</td>
 <td>"c"</td>
 </tr>
 <tr>
-<td rowspan="3">-m, --model</td>
+<td rowspan="2">-m, --model</td>
 <td>"manual"</td>
 <td rowspan="2">Default is None. When users need to specify the outgroup manually, first use the "manual" mode to generate the node computation order file "model_and_outgroup.txt", and modify the information of the outgroup used. Then use "continue" mode to generate the result based on the problem pieces modified in the previous step.</td>
 </tr>
@@ -90,8 +90,14 @@ represents circular chromosomes.</td>
 <td>"continue"</td>
 </tr>
 <tr>
-<td>"dotplot"</td>
+<td>"--dotplot"</td>
+<td>-</td>
 <td>Generate a two-by-two dotplot for each species</td>
+</tr>
+<tr>
+<td>"--expand"</td>
+<td>-</td>
+<td>Expanding synteny block coverage through graph algorithm</td>
 </tr>
 </table>
 
@@ -127,7 +133,14 @@ The role of each file is described in more detail below:
   ```shell
   python IAGS_AUTO -f ./example -c 60 -d 12 -s s
   ```
-+ 3.Manual designation of outgroups
+  
++ 3.Run with graph expansion algorithm
+  
+  ```shell
+  python IAGS_AUTO -f ./example --expand
+  ```
+  
++ 4.Manual designation of outgroups
 
   ```shell
   python IAGS_AUTO -f ./example -m manual
@@ -138,13 +151,15 @@ The role of each file is described in more detail below:
   ```shell
   python IAGS_AUTO -f ./example -m continue
   ```
-+ 4.Painting dotplot
+  
++ 5.Painting dotplot
 
   ```shell
-  python IAGS_AUTO -f ./example -m dotplot
+  python IAGS_AUTO -f ./example --dotplot
   ```
-
   Using this command generates an additional "Dotplot" folder in "Result" where the results will be stored.
+
+
 
 If you choose to download the source code for use, you will need to replace `iags_auto` with `python IAGS_ATUO.py` in the above command to start it by calling the python file directly.
 
