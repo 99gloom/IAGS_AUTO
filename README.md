@@ -76,7 +76,7 @@ The following will be introduced one by one:
 <td rowspan="2">-s, --shape</td>
 <td>"s" (Default)</td>
 <td rowspan="2">Chromosome shape. "s" represents string chromosomes and “c”
-represents circular chromosomes.</td>
+represents circular chromosomes</td>
 </tr>
 <tr>
 <td>"c"</td>
@@ -84,7 +84,7 @@ represents circular chromosomes.</td>
 <tr>
 <td rowspan="2">-m, --model</td>
 <td>"manual"</td>
-<td rowspan="2">Default is None. When users need to specify the outgroup manually, first use the "manual" mode to generate the node computation order file "model_and_outgroup.txt", and modify the information of the outgroup used. Then use "continue" mode to generate the result based on the problem pieces modified in the previous step.</td>
+<td rowspan="2">Default is None. When users need to specify the outgroup manually, first use the "manual" mode to generate the node computation order file "model_and_outgroup.txt", and modify the information of the outgroup used. Then use "continue" mode to generate the result based on the problem pieces modified in the previous step</td>
 </tr>
 <tr>
 <td>"continue"</td>
@@ -98,6 +98,14 @@ represents circular chromosomes.</td>
 <td>"--expand"</td>
 <td>-</td>
 <td>Expanding synteny block coverage through graph algorithm</td>
+</tr>
+<tr>
+<td rowspan="2">--check</td>
+<td>"yes" (Default)</td>
+<td rowspan="2">Whether to stop the program when the percentage of empty chromosomes is greater than 30% after filtering Synteny blocks by copy number (Stopping the program when the quality of the synteny block is low)</td>
+</tr>
+<tr>
+<td>"no"</td>
 </tr>
 </table>
 
@@ -126,40 +134,44 @@ The role of each file is described in more detail below:
 + 1.Quick start
 
   ```shell
-  python IAGS_AUTO -f ./example
+  iags_auto -f ./example
   ```
 + 2.Specified parameter
 
   ```shell
-  python IAGS_AUTO -f ./example -c 60 -d 12 -s s
+  iags_auto -f ./example -c 60 -d 12 -s s
   ```
   
 + 3.Run with graph expansion algorithm
   
   ```shell
-  python IAGS_AUTO -f ./example --expand
+  iags_auto -f ./example --expand
   ```
   
 + 4.Manual designation of outgroups
 
   ```shell
-  python IAGS_AUTO -f ./example -m manual
+  iags_auto -f ./example -m manual
   ```
 
   Subsequently change the outgroups in "Result/Tree_File/model_and_outgroup.txt" and continue to run.
 
   ```shell
-  python IAGS_AUTO -f ./example -m continue
+  iags_auto -f ./example -m continue
   ```
   
 + 5.Painting dotplot
 
   ```shell
-  python IAGS_AUTO -f ./example --dotplot
+  iags_auto -f ./example --dotplot
   ```
   Using this command generates an additional "Dotplot" folder in "Result" where the results will be stored.
 
++ 6.Close chromosomes check
 
+  ```shell
+  iags_auto -f ./example --check no
+  ```
 
 If you choose to download the source code for use, you will need to replace `iags_auto` with `python IAGS_ATUO.py` in the above command to start it by calling the python file directly.
 

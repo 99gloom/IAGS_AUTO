@@ -99,6 +99,14 @@ IAGS_AUTO工具需要三种文件：各物种gff文件、orthogroup.tsv文件，
 <td>-</td>
 <td>通过图扩充算法增加共线块覆盖度</td>
 </tr>
+<tr>
+<td rowspan="2">--check</td>
+<td>"yes" (Default)</td>
+<td rowspan="2">按拷贝数比例过滤共线块后，空染色体占比大于30%时是否停止程序（共线块质量低时停止程序）</td>
+</tr>
+<tr>
+<td>"no"</td>
+</tr>
 </table>
 
 ### 结果
@@ -148,11 +156,17 @@ model_and_outgroup.txt为各祖先节点所用外族信息，如需手动指定�
   ```shell
   iags_auto -f ./example -m continue
   ```
+  
 + 5.绘制dotplot
   ```shell
-  iags_auto -f ./example -m dotplot
+  iags_auto -f ./example --dotplot
   ```
   使用此命令，会在Result中额外生成一个Dotplot文件夹，将结果存放其中。
+
++ 6.不进行染色体质量检验
+  ```shell
+  iags_auto -f ./example --check no
+  ```
 
 如果您选择直接下载源码使用，则需要将上述命令中`iags_auto`替换为`python IAGS_ATUO.py`，通过直接调用python文件启动。
 

@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-def evaluateBlocks(sp, unevaluated_dir, outdir):
+def evaluateBlocks(sp, unevaluated_dir, outdir, check):
     flag = False
     for i in sp:
         remain_row = []
@@ -36,6 +36,7 @@ def evaluateBlocks(sp, unevaluated_dir, outdir):
         if 'synteny' in i or 'genenumber' in i:
             shutil.copy(os.path.join(unevaluated_dir, i), os.path.join(outdir, i))
 
-    if flag:
-        print('Program Interruption: too many empty chromosome, please adjust the cycleThreshold parameter!')
+    if flag and check:
+        print('Program Interruption: too many empty chromosome, please adjust the cycleThreshold parameter!\n'
+              'Or you can select the parameter "--check no" to ignore the check')
         exit()

@@ -24,9 +24,9 @@ class Evolutionary_tree():
         print(byte_string_tree_sp_name)
         print(byte_string_tree_copy_number)
         # 得到节点信息并输出所有的构建信息
-        leaves_nodes_id, non_leaves_node_id, computing_nodes_id, painting_node_id = self.__get_nodes_info(tree)
+        leaves_nodes_id, non_leaves_node_id, computing_start_nodes_id, painting_node_id = self.__get_nodes_info(tree)
         computing_list = self.__calculate_ancestor_nodes(tree, leaves_nodes_id, non_leaves_node_id,
-                                                         computing_nodes_id)
+                                                         computing_start_nodes_id)
 
         return tree, computing_list, leaves_nodes_id, non_leaves_node_id, painting_node_id
 
@@ -193,7 +193,7 @@ class Evolutionary_tree():
     def __get_nodes_info(self, tree):
         leaves_nodes_id = []
         non_leaves_node_id = []
-        computing_nodes_id = []
+        computing_start_nodes_id = []
         # 所有叶子节点
         for node in tree.leaves():
             leaves_nodes_id.append(node.identifier)
@@ -217,35 +217,42 @@ class Evolutionary_tree():
                 if i not in leaves_nodes_id:
                     flag = 0
 
-            # 得到所有满足条件的节点，并将以深度排序
-            if parent_id not in computing_nodes_id and 1 == flag:
-                computing_nodes_id.append(parent_id)
-            if 'root' in computing_nodes_id:
-                computing_nodes_id.remove('root')
-            computing_nodes_id = self.__sort_nodes_by_level(tree, computing_nodes_id)
+            # 得到所有子节点全都是叶子节点的节点，并将以深度排序
+            if parent_id not in computing_start_nodes_id and 1 == flag:
+                computing_start_nodes_id.append(parent_id)
+            if 'root' in computing_start_nodes_id:
+                computing_start_nodes_id.remove('root')
+            computing_start_nodes_id = self.__sort_nodes_by_level(tree, computing_start_nodes_id)
 
-        painting_node_id = computing_nodes_id[0]
+        painting_node_id = computing_start_nodes_id[0]
         while (tree.parent(painting_node_id).identifier != 'root'):
             painting_node_id = tree.parent(painting_node_id).identifier
 
         leaves_nodes_id.sort()
         non_leaves_node_id.sort()
-        return leaves_nodes_id, non_leaves_node_id, computing_nodes_id, painting_node_id
+        return leaves_nodes_id, non_leaves_node_id, computing_start_nodes_id, painting_node_id
 
-    def __calculate_ancestor_nodes(self, tree, leaves_nodes_id, non_leaves_node_id, computing_nodes_id):
+    def __calculate_ancestor_nodes(self, tree, leaves_nodes_id, non_leaves_node_id, computing_nodes_window):
         computed_nodes_id = []
-        max_step = 3 * (tree.level(computing_nodes_id[0]) + 1)
+        max_step = 3 * (tree.level(computing_nodes_window[0]) + 1)
         outgroup_step_length = 2
         modes_list = []
         # 自底向上、由近到远计算所有的节点
-        while (computing_nodes_id and outgroup_step_length < max_step):
+        visited_node = []
+        while (computing_nodes_window and outgroup_step_length < max_step):
             computing_number = 0
-            max_computing_number = len(computing_nodes_id) - 1
+            max_computing_number = len(computing_nodes_window) - 1
 
             # 从computing_nodes_id列表中获取重建进化树的先后顺序
             while (computing_number <= max_computing_number):
                 each_mode = ''
-                parent_computing_node = tree.get_node(computing_nodes_id[computing_number])
+                parent_computing_node = tree.get_node(computing_nodes_window[computing_number])
+                # 记录访问过的节点
+                if parent_computing_node in visited_node:
+                    computing_nodes_window.pop(computing_number)
+                    max_computing_number -= 1
+                    continue
+
                 children_nodes = tree.children(parent_computing_node.identifier)
                 leaves_child_node = []
                 non_leaves_child_node = []
@@ -267,6 +274,7 @@ class Evolutionary_tree():
                         each_mode += 'MultiCopyGMP'
                     outgroup_id = self.__find_outgroup(tree, parent_computing_node.identifier, outgroup_step_length,
                                                        leaves_nodes_id, computed_nodes_id)
+                    # 如果成功找到外族
                     if outgroup_id:
                         outgroup_times = ''
                         if tree.get_node(outgroup_id).data != parent_computing_node.data:
@@ -278,10 +286,11 @@ class Evolutionary_tree():
                                     + outgroup_id + outgroup_times
                         modes_list.append(each_mode)
                         computed_nodes_id.append(parent_computing_node.identifier)
-                        computing_nodes_id[computing_number] = tree.parent(parent_computing_node.identifier).identifier
-                        if computing_nodes_id[computing_number] == 'root':
+                        computing_nodes_window[computing_number] = tree.parent(parent_computing_node.identifier).identifier
+                        if computing_nodes_window[computing_number] == 'root':
                             max_computing_number -= 1
-                            computing_nodes_id.pop(computing_number)
+                            computing_nodes_window.pop(computing_number)
+                        visited_node.append(parent_computing_node)
                     else:
                         computing_number += 1
                 # GGHP和MultiCopyGGHP
@@ -292,6 +301,7 @@ class Evolutionary_tree():
                         each_mode += 'MultiCopyGGHP'
                     outgroup_id = self.__find_outgroup(tree, parent_computing_node.identifier, outgroup_step_length,
                                                        leaves_nodes_id, computed_nodes_id)
+                    # 如果成功找到外族
                     if outgroup_id:
                         outgroup_times = ''
                         if tree.get_node(outgroup_id).data != parent_computing_node.data:
@@ -303,16 +313,17 @@ class Evolutionary_tree():
                                     + outgroup_id + outgroup_times
                         modes_list.append(each_mode)
                         computed_nodes_id.append(parent_computing_node.identifier)
-                        computing_nodes_id[computing_number] = tree.parent(parent_computing_node.identifier).identifier
-                        if computing_nodes_id[computing_number] == 'root':
+                        computing_nodes_window[computing_number] = tree.parent(parent_computing_node.identifier).identifier
+                        if computing_nodes_window[computing_number] == 'root':
                             max_computing_number -= 1
-                            computing_nodes_id.pop(computing_number)
+                            computing_nodes_window.pop(computing_number)
+                        visited_node.append(parent_computing_node)
                     else:
                         computing_number += 1
                 else:
                     print('Wrong Copy Number')
                     exit()
-            computing_nodes_id = self.__sort_nodes_by_level(tree, computing_nodes_id)
+                computing_nodes_window = self.__sort_nodes_by_level(tree, computing_nodes_window)
             outgroup_step_length += 1
 
         # 检查是否计算完全

@@ -1,0 +1,7 @@
+Top three copy number ratio:
+4:2:1:1 -> 2977
+3:2:1:1 -> 1988
+2:2:1:1 -> 1072
+The copy number ratio you input: 2:1:1:2 -> 102,
+ranked No. 14
+The number of genes matching the copy number is too low, we recommend checking the evolution tree you input!

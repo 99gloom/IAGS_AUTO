@@ -41,6 +41,9 @@ def main():
 
     parsers.add_argument('-e','--expand', required=False, action='store_true',
                          help='\'expand\' is increasing synteny block coverage by graph algorithms.')
+    parsers.add_argument('--check', required=False, choices=['yes','no'],
+                         help=('\'check\' is whether you accept empty chromosomes greater than 30 percent. '
+                              'Default is the need to check'))
 
 
     fileDir,\
@@ -52,7 +55,8 @@ def main():
     chr_shape, \
     manual_option, \
     dotplot, \
-    expand= process_input(parsers)
+    expand,\
+    check= process_input(parsers)
 
     pre_manual = True
     after_manual = True
@@ -158,7 +162,7 @@ def main():
                                       chr_shape)
             shutil.rmtree(outputPath_temp_blocks)
 
-            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
+            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks, check)
             '''
             DRIMM后处理——更改位置
             '''
@@ -172,7 +176,7 @@ def main():
 
 
             # remove empty chromosome
-            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks)
+            pEmpty.evaluateBlocks(processOrthoFind.sp, outputPath_unfilter_empty_chr_Blocks, outputPath_finalBlocks, check)
 
             mapping(graph_filter.manual_mapping, outputPath_finalBlocks, mapping_dir)
 

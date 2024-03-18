@@ -1,6 +1,5 @@
 from copy import deepcopy
 from typing import List
-from scipy.sparse import triu
 import networkx as nx
 
 from .BaseSyntenyClass import BaseSyntenyClass
