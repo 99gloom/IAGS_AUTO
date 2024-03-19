@@ -12,7 +12,7 @@ You can use this tool via conda, or by downloading the source code.
 
 + Creating a Virtual Environment
    ```shell
-   conda create -n iags_auto python=3.7
+   conda create -n iags_auto python=3.9
    ```
 + Download
    ```shell

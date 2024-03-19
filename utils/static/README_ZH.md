@@ -11,7 +11,7 @@
 
 + 创建虚拟环境
    ```shell
-   conda create -n iags_auto python=3.7
+   conda create -n iags_auto python=3.9
    ```
 + 下载
    ```shell
