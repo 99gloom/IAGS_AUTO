@@ -1,3 +1,0 @@
-CRB ratio: 2.01%
-Mode: GMP
-Estimated acc: 99.3481303675%

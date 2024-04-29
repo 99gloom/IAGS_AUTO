@@ -1,6 +1,0 @@
-Top three copy number ratio:
-4:2:1:1 -> 2977
-3:2:1:1 -> 1988
-2:2:1:1 -> 1072
-The copy number ratio you input: 4:2:1:1 -> 2977,
-ranked No. 1
