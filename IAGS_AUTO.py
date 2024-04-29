@@ -180,7 +180,6 @@ def main():
 
             mapping(graph_filter.manual_mapping, outputPath_finalBlocks, mapping_dir)
 
-
     if after_manual:
         # process IAGS
         if not expand:

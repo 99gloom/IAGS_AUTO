@@ -51,6 +51,31 @@ class BaseSyntenyClass:
         G.add_edge(new_block_name, end, weight=edge_weight, sp_set=deepcopy(sp_set))
 
     def out_res(self, dir , root_name, virtual_name):
+
+        def delete_illegal_content(m2b,b2m):
+            res = set()
+            for k,v in b2m.items():
+                count = 0
+                for i in v:
+                    i:str
+                    if i.startswith('Manual'):
+                        count += 1
+                if count > 1:
+                    res.add(k)
+                    res.update(v)
+            res_list = list(res)
+            index = 0
+            while index < len(res_list):
+                if res_list[index].startswith('Manual'):
+                    res_list.extend(m2b[res_list[index]])
+                index += 1
+
+            manual_to_origin = {key: value for key, value in self.manual_to_origin.items() if key not in res_list}
+            origin_to_manual = {key: value for key, value in self.origin_to_manual.items() if key not in res_list}
+            return manual_to_origin, origin_to_manual
+
+        self.manual_to_origin,self.origin_to_manual = delete_illegal_content(self.manual_to_origin,self.origin_to_manual)
+
         virtual_dict = {}
         with open(f'./{dir}/{root_name}-M2B.txt', 'w') as root_f:
             for k, v in self.manual_to_origin.items():

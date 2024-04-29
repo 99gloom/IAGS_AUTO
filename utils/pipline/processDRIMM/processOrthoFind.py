@@ -81,6 +81,7 @@ class processOrthoFind:
         # 对gff文件内按chr顺序排序
         for i in self.gff_path_list:
             dataFrame = pd.read_csv(i, header=None, sep='\t')
+            dataFrame[0] = dataFrame[0].astype(str)
             name = dataFrame.at[0, 0]
             number_index = 0
             for j in range(len(name) - 1, -1, -1):

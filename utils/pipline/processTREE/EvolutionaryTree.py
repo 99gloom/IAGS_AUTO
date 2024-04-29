@@ -119,7 +119,9 @@ class Evolutionary_tree():
     def __get_tree_file_info(self, tree_file_path):
         with open(tree_file_path) as tf:
             for line in tf:
-                tree_info = line.rstrip('\n').rstrip(' ')
+                tree_info = line.strip()
+                if tree_info.endswith(';'):
+                    tree_info = tree_info[:-1]
 
         # 将树文件分开，只保留WGD括号及其物种
         tree_format = []

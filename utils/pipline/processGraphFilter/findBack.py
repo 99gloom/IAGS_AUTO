@@ -121,7 +121,7 @@ class FindBack():
                 for each_block in row:
                     block = each_block if not each_block.startswith('-') else each_block[1:]
                     if block in B2M.keys():
-                        manual = B2M[block]
+                        manual = B2M[block].split(' ')[0]
                         manual_block_count[manual][block] += 1
 
         manual_block_priority = {}
@@ -200,7 +200,7 @@ class FindBack():
                 # 优先通过邻接获得M方向，记录邻接信息，如果已经存储过，则以以前的邻接作为方向
                 collect = []
                 for index in range(1, len(signal_block_row)):
-                    last = signal_block_row[index - 1]
+                    last = signal_block_row[index - 1].split(' ')[0]
                     if last:
                         collect.append(index - 1)
                         if last != signal_block_row[index]:

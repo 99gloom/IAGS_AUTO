@@ -47,7 +47,7 @@ IAGS_AUTO工具需要三种文件：各物种gff文件、orthogroup.tsv文件，
 
 2. Orthogroups.tsv：[OrthoFinder](https://github.com/davidemms/OrthoFinder) 的输出文件
 
-3. species.tree：WGD-Newick格式。本质为Newick格式的修改版本，在树中的WGD位点，添加了`[WGD]`标志。下图中红色点位为WGD标志。  
+3. species.tree：WGD-Newick格式。本质为Newick格式的修改版本，在树中的WGD位点，添加了`[WGD]`标志。下图中红色点位为WGD标志。（结尾有无`';'`号都可以）  
   ![图中红色点位为WGD标志](img.png)
 
 ### 用法

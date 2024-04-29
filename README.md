@@ -46,7 +46,7 @@ The following will be introduced one by one:
    sp_name  gene_name  starting_position  ending_position
    ```
 2. Orthogroups.tsv: The output file of [OrthoFinder](https://github.com/davidemms/OrthoFinder).
-3. species.tree: WGD-Newick format. Essentially a modified version of the Newick format, with the addition of "[WGD]" markers at the WGD (Whole Genome Duplication) positions in the tree. In the figure below, the red dots represent WGD markers.
+3. species.tree: WGD-Newick format. Essentially a modified version of the Newick format, with the addition of "[WGD]" markers at the WGD (Whole Genome Duplication) positions in the tree. In the figure below, the red dots represent WGD markers. (At the end of the document, whether there is a `';'` or not is acceptable)
    ![Red dots are WGD signal](utils/static/img.png)
 
 ### Application

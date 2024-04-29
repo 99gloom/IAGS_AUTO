@@ -106,7 +106,7 @@ class ProcessIAGS:
 
     def process_painting(self):
         color_list = ['#DF1159','#1E93C9','#26AF67','#D5A1C5','#EBCA6D','#94B51E','#000000','#A9A9A9','#62C1BD',
-                      '#FF8C00','#4169E1','#FF00FF','#9932CC','00FFFF','00FF00']
+                      '#FF8C00','#4169E1','#FF00FF','#9932CC','#00FFFF','#00FF00']
         block_length_file = os.path.join(self.final_block_dir,'blockindex.genenumber')
         target_species_block_file = self.__get_node_path(self.evo_tree.painting_anc_node)
         target_species_name = self.evo_tree.painting_anc_node
